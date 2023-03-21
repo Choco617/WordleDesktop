@@ -1,0 +1,11 @@
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\bin\Debug\WordleDesktop.exe.config
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\bin\Debug\WordleDesktop.exe
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\bin\Debug\WordleDesktop.pdb
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.csproj.AssemblyReference.cache
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.csproj.SuggestedBindingRedirects.cache
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.GameForm.resources
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.Properties.Resources.resources
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.csproj.GenerateResource.cache
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.csproj.CoreCompileInputs.cache
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.exe
+C:\Users\matt\source\repos\WordleDesktop\WordleDesktop\obj\Debug\WordleDesktop.pdb
