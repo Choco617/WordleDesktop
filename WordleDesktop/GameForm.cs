@@ -32,13 +32,12 @@ namespace WordleDesktop
             //sAnswer = "GLOVE";
 
             Answers = File.ReadAllLines("valid-wordle-words.txt").ToList();
-            Random RNG = new Random();
-            sAnswer = Answers[RNG.Next(Answers.Count - 1)].ToUpper();
+            RandomizeAns();
             //Console.WriteLine($"picked random answer {sAnswer}");
             int iLetterSize = 40;
             int iGridSize = iLetterSize + 4;
             int iYInset = 20;
-            int iXInset = this.Width/2 - 2 * iGridSize - iLetterSize/2 - (iGridSize - iLetterSize)/2;
+            int iXInset = this.Width / 2 - 2 * iGridSize - iLetterSize / 2 - (iGridSize - iLetterSize) / 2;
 
             string fontName = "Clear Sans";
             Font GuessFont = new Font(fontName, 18);
@@ -73,10 +72,10 @@ namespace WordleDesktop
                 }
             }
 
-            string[] QwertyLetters = new string[] { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"};
+            string[] QwertyLetters = new string[] { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M" };
             int iKBletterSize = 30;
             int iKBgridSize = iKBletterSize + 4;
-            int iKBX = this.Width/2 - iKBgridSize * 5;
+            int iKBX = this.Width / 2 - iKBgridSize * 5;
             int iKBY = LC[5, 4].Top + iKBgridSize + 20;
             for (int i = 0; i < KeyboardLC.Length; i++)
             {
@@ -94,18 +93,24 @@ namespace WordleDesktop
 
                 // tee up next location
                 iKBX += iKBgridSize;
-                if (i == 9) 
-                { 
+                if (i == 9)
+                {
                     iKBX = this.Width / 2 - (int)(iKBgridSize * 4.5);
                     iKBY += iKBgridSize;
                 }
-                if (i == 18) 
-                { 
+                if (i == 18)
+                {
                     iKBX = this.Width / 2 - (int)(iKBgridSize * 3.5);
                     iKBY += iKBgridSize;
                 }
             }
-            
+
+        }
+
+        private void RandomizeAns()
+        {
+            Random RNG = new Random();
+            sAnswer = Answers[RNG.Next(Answers.Count - 1)].ToUpper();
         }
 
         public string GetGuessWord(int Which)
@@ -228,6 +233,12 @@ namespace WordleDesktop
             return cRet;
         }
 
+        public void GiveUp()
+        {
+            MessageBox.Show($"So close! The answer was {sAnswer}. Thanks for playing.");
+            Reset();
+        }
+
         public static class ColorConst
         {
             public static Color Right = ColorTranslator.FromHtml("#538D4E");
@@ -235,6 +246,12 @@ namespace WordleDesktop
             public static Color Misplaced = ColorTranslator.FromHtml("#B59F3B");
             public static Color Indeterminate = ColorTranslator.FromHtml("#121213");
             public static Color IndeterminateKB = ColorTranslator.FromHtml("#818384");
+        }
+
+        private void GiveUpButton_Click(object sender, EventArgs e)
+        {
+            GiveUp();
+            LC[0,0].Focus();
         }
     }
 }

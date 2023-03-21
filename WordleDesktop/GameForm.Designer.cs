@@ -32,15 +32,31 @@ namespace WordleDesktop
         /// </summary>
         private void InitializeComponent()
         {
+            this.GiveUpButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // GiveUpButton
+            // 
+            this.GiveUpButton.Location = new System.Drawing.Point(12, 12);
+            this.GiveUpButton.Name = "GiveUpButton";
+            this.GiveUpButton.Size = new System.Drawing.Size(57, 23);
+            this.GiveUpButton.TabIndex = 1;
+            this.GiveUpButton.TabStop = false;
+            this.GiveUpButton.Text = "Give Up";
+            this.GiveUpButton.UseVisualStyleBackColor = true;
+            this.GiveUpButton.Click += new System.EventHandler(this.GiveUpButton_Click);
             // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(373, 409);
+            this.Controls.Add(this.GiveUpButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview = true;
+            this.MaximizeBox = false;
             this.Name = "GameForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WordleDesktop";
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyDown);
@@ -101,8 +117,7 @@ namespace WordleDesktop
                     iLetter = 0;
                     if (iTurn > 5)
                     {
-                        MessageBox.Show($"So close! The answer was {sAnswer}. Thanks for playing.");
-                        Reset();
+                        GiveUp();
                     }
                 }
             }
@@ -148,11 +163,14 @@ namespace WordleDesktop
             {
                 KeyboardLC[i].BackColor = ColorConst.IndeterminateKB;
             }
+            RandomizeAns();
         }
 
 
 
         #endregion
+
+        private Button GiveUpButton;
     }
 }
 
