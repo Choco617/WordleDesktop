@@ -38,7 +38,7 @@ namespace WordleDesktop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(279, 389);
+            this.ClientSize = new System.Drawing.Size(373, 409);
             this.KeyPreview = true;
             this.Name = "GameForm";
             this.Text = "WordleDesktop";
@@ -134,15 +134,19 @@ namespace WordleDesktop
 
         private void Reset()
         {
+            iTurn = 0;
+            iLetter = 0;
             for (int i = 0; i < LC.GetLength(0); i++)
             {
                 for (int j = 0; j < LC.GetLength(1); j++)
                 {
                     LC[i, j].Text = "";
                     LC[i, j].BackColor = ColorTranslator.FromHtml(ColorConst.Indeterminate);
-                    iTurn = 0;
-                    iLetter = 0;
                 }
+            }
+            for (int i = 0; i < KeyboardLC.GetLength(0); i++)
+            {
+                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(ColorConst.IndeterminateKB);
             }
         }
 

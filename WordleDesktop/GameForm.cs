@@ -13,16 +13,13 @@ namespace WordleDesktop
 {
     public partial class GameForm : Form
     {
-        public int iLetterSize = 40;
-        public int iGridSize = 44;
-        public int iXInset = 20;
-        public int iYInset = 20;
         public string sAnswer = "";
         public string sGuess = "";
         public int iTurn = 0;
         public int iLetter = 0;
         public Label[,] LC = new Label[6, 5];
         public List<string> Answers;
+        public Label[] KeyboardLC = new Label[26];
 
         public GameForm()
         {
@@ -37,22 +34,27 @@ namespace WordleDesktop
             Answers = File.ReadAllLines("valid-wordle-words.txt").ToList();
             Random RNG = new Random();
             sAnswer = Answers[RNG.Next(Answers.Count - 1)].ToUpper();
-            Console.WriteLine($"picked random answer {sAnswer}");
+            //Console.WriteLine($"picked random answer {sAnswer}");
+            int iLetterSize = 40;
+            int iGridSize = iLetterSize + 4;
+            int iYInset = 20;
+            int iXInset = this.Width/2 - 2 * iGridSize - iLetterSize/2 - (iGridSize - iLetterSize)/2;
 
             string fontName = "Clear Sans";
-            Font testFont = new Font(fontName, 18);
-            if (testFont.Name != fontName)
+            Font GuessFont = new Font(fontName, 18);
+            if (GuessFont.Name != fontName)
             {
                 Console.WriteLine($"could not find font {fontName}");
                 fontName = "Helvetica Neue";
-                testFont = new Font(fontName, 18);
-                if (testFont.Name != fontName)
+                GuessFont = new Font(fontName, 18);
+                if (GuessFont.Name != fontName)
                 {
                     Console.WriteLine($"could not find font {fontName}");
                     fontName = "Arial";
-                    testFont = new Font(fontName, 18);
+                    GuessFont = new Font(fontName, 18);
                 }
             }
+            Font KBfont = new Font(fontName, 12);
 
             for (int i = 0; i < LC.GetLength(0); i++)
             {
@@ -67,7 +69,40 @@ namespace WordleDesktop
                     LC[i, j].Height = iLetterSize;
                     LC[i, j].Width = iLetterSize;
                     LC[i, j].TextAlign = ContentAlignment.MiddleCenter;
-                    LC[i, j].Font = testFont;
+                    LC[i, j].Font = GuessFont;
+                }
+            }
+
+            string[] QwertyLetters = new string[] { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"};
+            int iKBletterSize = 30;
+            int iKBgridSize = iKBletterSize + 4;
+            int iKBX = this.Width/2 - iKBgridSize * 5;
+            int iKBY = LC[5, 4].Top + iKBgridSize + 20;
+            for (int i = 0; i < KeyboardLC.Length; i++)
+            {
+                KeyboardLC[i] = new Label();
+                this.Controls.Add(KeyboardLC[i] as Control);
+                KeyboardLC[i].Location = new Point(iKBX, iKBY);
+                KeyboardLC[i].Visible = true;
+                KeyboardLC[i].ForeColor = Color.White;
+                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(ColorConst.IndeterminateKB);
+                KeyboardLC[i].Height = iKBletterSize;
+                KeyboardLC[i].Width = iKBletterSize;
+                KeyboardLC[i].TextAlign = ContentAlignment.MiddleCenter;
+                KeyboardLC[i].Font = KBfont;
+                KeyboardLC[i].Text = QwertyLetters[i];
+
+                // tee up next location
+                iKBX += iKBgridSize;
+                if (i == 9) 
+                { 
+                    iKBX = this.Width / 2 - (int)(iKBgridSize * 4.5);
+                    iKBY += iKBgridSize;
+                }
+                if (i == 18) 
+                { 
+                    iKBX = this.Width / 2 - (int)(iKBgridSize * 3.5);
+                    iKBY += iKBgridSize;
                 }
             }
             
@@ -94,8 +129,6 @@ namespace WordleDesktop
                     LC[WhichTurn, i].BackColor = ColorTranslator.FromHtml(ColorConst.Right);
                 }
             }
-            // after highlighting, if this is completely correct, just stop
-            if (sGuess == sAnswer) { return 0; }
             // second, check for any letters that are absent from the answer entirely
             for (int i = 0; i < LC.GetLength(1); i++)
             {
@@ -121,7 +154,16 @@ namespace WordleDesktop
                 }
             }
 
-            return 1;
+            // after dealing with guess itself, update the visual keyboard
+            for (int i = 0; i < KeyboardLC.Length; i++)
+            {
+                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(GetLetterStatus(KeyboardLC[i].Text));
+            }
+
+            // deal with correct answer after keyboard updates
+            if (sGuess == sAnswer) { return 0; }
+
+            return -1;
         }
 
         private int DecideMismatched(int iWhich)
@@ -130,17 +172,18 @@ namespace WordleDesktop
             List<int> MismatchAnswer = new List<int>();
             for (int i = 0; i < sGuess.Length; i++)
             {
-                // add to MismatchGuess any index that equals the target one but isn't a correct letter against the answer
+                // add to MismatchGuess any index that equals the target one but isn't a correct letter against the answer (e.g. checking index #1 in guess GLEAN (L) against answer SLYLY, MismatchGuess == {} (empty))
                 if (sGuess.Substring(iWhich, 1).Equals(sGuess.Substring(i, 1)) && !sGuess.Substring(i, 1).Equals(sAnswer.Substring(i, 1)))
                 {
                     MismatchGuess.Add(i);
                 }
-                // add to MismatchAnswer any index that equals the target one but isn't a correct letter against the guess
+                // add to MismatchAnswer any index that equals the target one but isn't a correct letter against the guess (e.g. checking index #1 in answer SLYLY (L), MismatchAnswer == {3})
                 if (sGuess.Substring(iWhich, 1).Equals(sAnswer.Substring(i, 1)) && !sAnswer.Substring(i, 1).Equals(sGuess.Substring(i, 1)))
                 {
                     MismatchAnswer.Add(i);
                 }
             }
+            /*
             string OutputAns = "";
             if (MismatchAnswer.Count > 0)
             {
@@ -151,8 +194,7 @@ namespace WordleDesktop
             {
                 for (int i = 0; i < MismatchGuess.Count; i++) { OutputGus += (MismatchGuess[i] + " "); }
             }
-            //Console.WriteLine($"MismatchAnswer for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputAns}");
-            //Console.WriteLine($"MismatchGuess  for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputGus}");
+            */
 
             int MaxMismatches = MismatchAnswer.Count;
             if (MismatchGuess.Count < MismatchAnswer.Count) { MaxMismatches = MismatchGuess.Count; }
@@ -163,20 +205,44 @@ namespace WordleDesktop
                 if (MismatchGuess[i] == iWhich) { iRet = 0; }
             }
 
-            //Console.WriteLine($"DecideMismatched returning {iRet}");
-
             return iRet;
-
         }
 
         public int CheckValidWord(string Word)
         {
             for (int i = 0; i < Answers.Count; i++)
             {
-                //if (i < 20) { Console.WriteLine($"word #{i} = {Answers[i]}"); }
                 if (Word.Equals(Answers[i],StringComparison.OrdinalIgnoreCase)) { return 0; }
             }
             return -1;
+        }
+
+        private string GetLetterStatus(string sLetter)
+        {
+            string sRet = ColorConst.IndeterminateKB;
+
+            for (int i = 0; i < LC.GetLength(0); i++)
+            {
+                for (int j = 0; j < LC.GetLength(1); j++)
+                {
+                    if (LC[i, j].Text == sLetter)
+                    {
+                        if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Right))
+                        {
+                            return ColorConst.Right;
+                        }
+                        else if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Wrong))
+                        {
+                            return ColorConst.Wrong;
+                        }
+                        else if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Misplaced))
+                        {
+                            sRet = ColorConst.Misplaced;
+                        }
+                    }
+                }
+            }
+            return sRet;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -221,6 +287,7 @@ namespace WordleDesktop
             public const string Wrong = "#3A3A3C";
             public const string Misplaced = "#B59F3B";
             public const string Indeterminate = "#121213";
+            public const string IndeterminateKB = "#818384";
         }
         
         public class LetterCell
