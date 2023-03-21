@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace WordleDesktop
 {
@@ -21,6 +22,7 @@ namespace WordleDesktop
         public int iTurn = 0;
         public int iLetter = 0;
         public Label[,] LC = new Label[6, 5];
+        public List<string> Answers;
 
         public GameForm()
         {
@@ -30,7 +32,12 @@ namespace WordleDesktop
         public void GameForm_Load(object sender, EventArgs e)
         {
             //sAnswer = "LEARN";
-            sAnswer = "GLOVE";
+            //sAnswer = "GLOVE";
+
+            Answers = File.ReadAllLines("valid-wordle-words.txt").ToList();
+            Random RNG = new Random();
+            sAnswer = Answers[RNG.Next(Answers.Count - 1)].ToUpper();
+            Console.WriteLine($"picked random answer {sAnswer}");
 
             string fontName = "Clear Sans";
             Font testFont = new Font(fontName, 18);
@@ -144,8 +151,8 @@ namespace WordleDesktop
             {
                 for (int i = 0; i < MismatchGuess.Count; i++) { OutputGus += (MismatchGuess[i] + " "); }
             }
-            Console.WriteLine($"MismatchAnswer for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputAns}");
-            Console.WriteLine($"MismatchGuess  for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputGus}");
+            //Console.WriteLine($"MismatchAnswer for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputAns}");
+            //Console.WriteLine($"MismatchGuess  for #{iWhich} ({sGuess.Substring(iWhich, 1)}): {OutputGus}");
 
             int MaxMismatches = MismatchAnswer.Count;
             if (MismatchGuess.Count < MismatchAnswer.Count) { MaxMismatches = MismatchGuess.Count; }
@@ -156,10 +163,20 @@ namespace WordleDesktop
                 if (MismatchGuess[i] == iWhich) { iRet = 0; }
             }
 
-            Console.WriteLine($"DecideMismatched returning {iRet}");
+            //Console.WriteLine($"DecideMismatched returning {iRet}");
 
             return iRet;
 
+        }
+
+        public int CheckValidWord(string Word)
+        {
+            for (int i = 0; i < Answers.Count; i++)
+            {
+                //if (i < 20) { Console.WriteLine($"word #{i} = {Answers[i]}"); }
+                if (Word.Equals(Answers[i],StringComparison.OrdinalIgnoreCase)) { return 0; }
+            }
+            return -1;
         }
 
         protected override void OnPaint(PaintEventArgs e)

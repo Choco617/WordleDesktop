@@ -82,7 +82,11 @@ namespace WordleDesktop
                     }
                 }
                 // not in the dictionary
-
+                if (CheckValidWord(GetGuessWord(iTurn)) == -1)
+                {
+                    MessageBox.Show("Invalid word!");
+                    return;
+                }
 
                 // evaluate the guess
                 int iResult = EvaluateGuess(iTurn);
