@@ -65,7 +65,7 @@ namespace WordleDesktop
                     LC[i, j].Location = new Point(iXInset + j * iGridSize, iYInset + i * iGridSize);
                     LC[i, j].Visible = true;
                     LC[i, j].ForeColor = Color.White;
-                    LC[i, j].BackColor = ColorTranslator.FromHtml(ColorConst.Indeterminate);
+                    LC[i, j].BackColor = ColorConst.Indeterminate;
                     LC[i, j].Height = iLetterSize;
                     LC[i, j].Width = iLetterSize;
                     LC[i, j].TextAlign = ContentAlignment.MiddleCenter;
@@ -85,7 +85,7 @@ namespace WordleDesktop
                 KeyboardLC[i].Location = new Point(iKBX, iKBY);
                 KeyboardLC[i].Visible = true;
                 KeyboardLC[i].ForeColor = Color.White;
-                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(ColorConst.IndeterminateKB);
+                KeyboardLC[i].BackColor = ColorConst.IndeterminateKB;
                 KeyboardLC[i].Height = iKBletterSize;
                 KeyboardLC[i].Width = iKBletterSize;
                 KeyboardLC[i].TextAlign = ContentAlignment.MiddleCenter;
@@ -115,41 +115,36 @@ namespace WordleDesktop
 
         public int EvaluateGuess(int WhichTurn)
         {
-            //Console.WriteLine($"current guess to evaluate is {LC[WhichTurn, 0].Text}{LC[WhichTurn, 1].Text}{LC[WhichTurn, 2].Text}{LC[WhichTurn, 3].Text}{LC[WhichTurn, 4].Text}");
-            //sGuess = LC[WhichTurn, 0].Text + LC[WhichTurn, 1].Text + LC[WhichTurn, 2].Text + LC[WhichTurn, 3].Text + LC[WhichTurn, 4].Text;
             sGuess = GetGuessWord(WhichTurn);
-            //Console.WriteLine($"current guess to evaluate is {sGuess}");
 
             // first, check for any letters that are correct
             for (int i = 0; i < LC.GetLength(1); i++)
             {
-                //Console.WriteLine($"evaluating character {i}: guess={LC[WhichTurn, i].Text}, answer={sAnswer.Substring(i, 1)}, match? {LC[WhichTurn, i].Text.Equals(sAnswer.Substring(i, 1))}");
                 if (LC[WhichTurn, i].Text.Equals(sAnswer.Substring(i, 1)))
                 {
-                    LC[WhichTurn, i].BackColor = ColorTranslator.FromHtml(ColorConst.Right);
+                    LC[WhichTurn, i].BackColor = ColorConst.Right;
                 }
             }
             // second, check for any letters that are absent from the answer entirely
             for (int i = 0; i < LC.GetLength(1); i++)
             {
-                //Console.WriteLine($"evaluating character {i}: guess={LC[WhichTurn, i].Text}, (full answer={sAnswer}), wrong? {sAnswer.IndexOf(LC[WhichTurn, i].Text) == -1}");
                 if (sAnswer.IndexOf(LC[WhichTurn, i].Text) == -1)
                 {
-                    LC[WhichTurn, i].BackColor = ColorTranslator.FromHtml(ColorConst.Wrong);
+                    LC[WhichTurn, i].BackColor = ColorConst.Wrong;
                 }
             }
             // third, figure out any misplaced letters
             for (int i = 0; i < LC.GetLength(1); i++)
             {
-                if (LC[WhichTurn, i].BackColor == ColorTranslator.FromHtml(ColorConst.Indeterminate))
+                if (LC[WhichTurn, i].BackColor == ColorConst.Indeterminate)
                 {
                     if (DecideMismatched(i) == 0)
                     {
-                        LC[WhichTurn, i].BackColor = ColorTranslator.FromHtml(ColorConst.Misplaced);
+                        LC[WhichTurn, i].BackColor = ColorConst.Misplaced;
                     }
                     else
                     {
-                        LC[WhichTurn, i].BackColor = ColorTranslator.FromHtml(ColorConst.Wrong);
+                        LC[WhichTurn, i].BackColor = ColorConst.Wrong;
                     }
                 }
             }
@@ -157,7 +152,7 @@ namespace WordleDesktop
             // after dealing with guess itself, update the visual keyboard
             for (int i = 0; i < KeyboardLC.Length; i++)
             {
-                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(GetLetterStatus(KeyboardLC[i].Text));
+                KeyboardLC[i].BackColor = GetLetterStatus(KeyboardLC[i].Text);
             }
 
             // deal with correct answer after keyboard updates
@@ -183,18 +178,6 @@ namespace WordleDesktop
                     MismatchAnswer.Add(i);
                 }
             }
-            /*
-            string OutputAns = "";
-            if (MismatchAnswer.Count > 0)
-            {
-                for (int i = 0; i < MismatchAnswer.Count; i++) { OutputAns += (MismatchAnswer[i] + " "); }
-            }
-            string OutputGus = "";
-            if (MismatchGuess.Count > 0)
-            {
-                for (int i = 0; i < MismatchGuess.Count; i++) { OutputGus += (MismatchGuess[i] + " "); }
-            }
-            */
 
             int MaxMismatches = MismatchAnswer.Count;
             if (MismatchGuess.Count < MismatchAnswer.Count) { MaxMismatches = MismatchGuess.Count; }
@@ -217,9 +200,9 @@ namespace WordleDesktop
             return -1;
         }
 
-        private string GetLetterStatus(string sLetter)
+        private Color GetLetterStatus(string sLetter)
         {
-            string sRet = ColorConst.IndeterminateKB;
+            Color cRet = ColorConst.IndeterminateKB;
 
             for (int i = 0; i < LC.GetLength(0); i++)
             {
@@ -227,93 +210,31 @@ namespace WordleDesktop
                 {
                     if (LC[i, j].Text == sLetter)
                     {
-                        if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Right))
+                        if (LC[i, j].BackColor == ColorConst.Right)
                         {
                             return ColorConst.Right;
                         }
-                        else if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Wrong))
+                        else if (LC[i, j].BackColor == ColorConst.Wrong)
                         {
                             return ColorConst.Wrong;
                         }
-                        else if (LC[i, j].BackColor == ColorTranslator.FromHtml(ColorConst.Misplaced))
+                        else if (LC[i, j].BackColor == ColorConst.Misplaced)
                         {
-                            sRet = ColorConst.Misplaced;
+                            cRet = ColorConst.Misplaced;
                         }
                     }
                 }
             }
-            return sRet;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            /*
-            base.OnPaint(e);
-
-            Graphics g = e.Graphics;
-            using (Pen selPen = new Pen(ColorTranslator.FromHtml(ColorConst.Indeterminate)))
-            {
-                
-                for (int i = 0; i < LC.GetLength(0); i++)
-                {
-                    for (int j = 0; j < LC.GetLength(1); j++)
-                    {
-                        //g.DrawRectangle(selPen, iInset + j * iGridSize, iInset + i * iGridSize, iLetterSize, iLetterSize);
-                        //SolidBrush selBrush = new SolidBrush(ColorTranslator.FromHtml(ColorConst.Right));
-                        //Console.WriteLine($"LC[{i}, {j}].LetterColor = {LC[i, j].LetterColor}");
-                        //Console.WriteLine($"i = {i}, j = {j}");
-                        
-                        //SolidBrush selBrush = new SolidBrush(ColorTranslator.FromHtml(LC[i, j].LetterColor));
-                        //g.FillRectangle(selBrush, new Rectangle(iXInset + j * iGridSize, iYInset + i * iGridSize, iLetterSize, iLetterSize));
-                        
-                        LC[i, j].Letter.BringToFront();
-                        LC[i, j].Letter.Text = "X";
-                        //Point somePoint = LC[i, j].Letter.Location;
-                        //Console.WriteLine($"should have just moved label [{i}, {j}] - its location is {somePoint.X}, {somePoint.Y}");
-                    }
-                }
-                Console.WriteLine($"data for label [0, 0]: \n" +
-                                  $"left = {LC[0, 0].Letter.Left} \n" +
-                                  $"top  = {LC[0, 0].Letter.Top} \n" +
-                                  $"visible = {LC[0, 0].Letter.Visible} \n" +
-                                  $"forecolor = {LC[0, 0].Letter.ForeColor} \n");
-            }
-            */
+            return cRet;
         }
 
         public static class ColorConst
         {
-            public const string Right = "#538D4E";
-            public const string Wrong = "#3A3A3C";
-            public const string Misplaced = "#B59F3B";
-            public const string Indeterminate = "#121213";
-            public const string IndeterminateKB = "#818384";
-        }
-        
-        public class LetterCell
-        {
-            /*
-            private Rectangle InternalRectangle;
-            private TextBox InternalLetter;
-
-            public Rectangle Rect
-            {
-                get { return InternalRectangle; }
-                set { InternalRectangle = value; }
-            }
-            public TextBox Letter
-            {
-                get { return InternalLetter; }
-                set { InternalLetter = value; }
-            }
-            */
-
-            private string IntlLetterColor = ColorConst.Indeterminate;
-            private Label IntlLetter = new Label();
-
-            public string LetterColor { get { return IntlLetterColor; } set {  IntlLetterColor = value; } }
-            public Label Letter { get { return IntlLetter; } set { IntlLetter = value; } }
-
+            public static Color Right = ColorTranslator.FromHtml("#538D4E");
+            public static Color Wrong = ColorTranslator.FromHtml("#3A3A3C");
+            public static Color Misplaced = ColorTranslator.FromHtml("#B59F3B");
+            public static Color Indeterminate = ColorTranslator.FromHtml("#121213");
+            public static Color IndeterminateKB = ColorTranslator.FromHtml("#818384");
         }
     }
 }

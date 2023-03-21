@@ -141,12 +141,12 @@ namespace WordleDesktop
                 for (int j = 0; j < LC.GetLength(1); j++)
                 {
                     LC[i, j].Text = "";
-                    LC[i, j].BackColor = ColorTranslator.FromHtml(ColorConst.Indeterminate);
+                    LC[i, j].BackColor = ColorConst.Indeterminate;
                 }
             }
             for (int i = 0; i < KeyboardLC.GetLength(0); i++)
             {
-                KeyboardLC[i].BackColor = ColorTranslator.FromHtml(ColorConst.IndeterminateKB);
+                KeyboardLC[i].BackColor = ColorConst.IndeterminateKB;
             }
         }
 
