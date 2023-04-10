@@ -32,6 +32,7 @@ namespace WordleDesktop
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             this.GiveUpButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -53,6 +54,7 @@ namespace WordleDesktop
             this.ClientSize = new System.Drawing.Size(373, 409);
             this.Controls.Add(this.GiveUpButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "GameForm";
@@ -69,6 +71,7 @@ namespace WordleDesktop
             if (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z)
             {
                 //MessageBox.Show(e.KeyCode.ToString());
+
                 
                 // update the corresponding LetterCell to show this letter
                 if (iLetter < LC.GetLength(1))
@@ -76,6 +79,12 @@ namespace WordleDesktop
                     LC[iTurn, iLetter].Text = e.KeyCode.ToString();
                     //Console.WriteLine($"should have just set LC[{iTurn}, {iLetter}] to {e.KeyCode.ToString()} - LC[iTurn, iLetter].Letter.Text = {LC[iTurn, iLetter].Text}");
                     iLetter++;
+
+                    // if this completes a word, check that it's valid, Quordle-style
+                    if (iLetter == LC.GetLength(1))
+                    {
+                        if (CheckValidWord(GetGuessWord(iTurn)) == -1) { RedWord(); }
+                    }
                 }
             }
             else if(e.KeyCode == Keys.Enter)
@@ -100,7 +109,7 @@ namespace WordleDesktop
                 // not in the dictionary
                 if (CheckValidWord(GetGuessWord(iTurn)) == -1)
                 {
-                    MessageBox.Show("Invalid word!");
+                    MessageBox.Show("Not in word list");
                     return;
                 }
 
@@ -123,6 +132,7 @@ namespace WordleDesktop
             }
             else if(e.KeyCode == Keys.Back)
             {
+                UnRedWord();
                 if (iLetter > 0)
                 {
                     // clear the LetterCell and decrement the counter
@@ -145,12 +155,14 @@ namespace WordleDesktop
             while (iLetter >= LC.GetLength(1)) { iLetter--; }
             for (; iLetter >= 0; iLetter--) { LC[iTurn, iLetter].Text = ""; }
             iLetter = 0;
+            UnRedWord();
         }
 
         private void Reset()
         {
-            iTurn = 0;
+            UnRedWord();
             iLetter = 0;
+            iTurn = 0;
             for (int i = 0; i < LC.GetLength(0); i++)
             {
                 for (int j = 0; j < LC.GetLength(1); j++)
@@ -166,6 +178,21 @@ namespace WordleDesktop
             RandomizeAns();
         }
 
+        public void RedWord()
+        {
+            for (int j = 0; j < LC.GetLength(1); j++)
+            {
+                LC[iTurn, j].ForeColor = Color.Red;
+            }
+        }
+
+        public void UnRedWord()
+        {
+            for (int j = 0; j < LC.GetLength(1); j++)
+            {
+                LC[iTurn, j].ForeColor = Color.White;
+            }
+        }
 
 
         #endregion
