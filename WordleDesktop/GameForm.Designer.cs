@@ -160,7 +160,6 @@ namespace WordleDesktop
 
         private void Reset()
         {
-            UnRedWord();
             iLetter = 0;
             iTurn = 0;
             for (int i = 0; i < LC.GetLength(0); i++)
