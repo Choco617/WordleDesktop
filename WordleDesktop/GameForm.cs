@@ -17,6 +17,7 @@ namespace WordleDesktop
         public string sGuess = "";
         public int iTurn = 0;
         public int iLetter = 0;
+        public bool bHard = false;
         public Label[,] LC = new Label[6, 5];
         public List<string> Answers;
         public Label[] KeyboardLC = new Label[26];
@@ -34,6 +35,7 @@ namespace WordleDesktop
             Answers = File.ReadAllLines("valid-wordle-words.txt").ToList();
             RandomizeAns();
             //Console.WriteLine($"picked random answer {sAnswer}");
+            bHard = HardModeBox.Checked;
             int iLetterSize = 40;
             int iGridSize = iLetterSize + 4;
             int iYInset = 20;
@@ -205,7 +207,7 @@ namespace WordleDesktop
             return -1;
         }
 
-        private Color GetLetterStatus(string sLetter)
+        public Color GetLetterStatus(string sLetter)
         {
             Color cRet = ColorConst.IndeterminateKB;
 
@@ -217,15 +219,21 @@ namespace WordleDesktop
                     {
                         if (LC[i, j].BackColor == ColorConst.Right)
                         {
-                            return ColorConst.Right;
-                        }
-                        else if (LC[i, j].BackColor == ColorConst.Wrong)
-                        {
-                            return ColorConst.Wrong;
+                            cRet = ColorConst.Right;
                         }
                         else if (LC[i, j].BackColor == ColorConst.Misplaced)
                         {
-                            cRet = ColorConst.Misplaced;
+                            if (cRet == ColorConst.IndeterminateKB)
+                            {
+                                cRet = ColorConst.Misplaced; // don't overrule Right to Misplaced
+                            }
+                        }
+                        else if (LC[i, j].BackColor == ColorConst.Wrong)
+                        {
+                            if (cRet == ColorConst.IndeterminateKB)
+                            {
+                                cRet = ColorConst.Wrong; // don't overrule Right or Misplaced to Wrong
+                            }
                         }
                     }
                 }
@@ -252,6 +260,11 @@ namespace WordleDesktop
         {
             GiveUp();
             LC[0,0].Focus();
+        }
+
+        private void HardModeBox_CheckedChanged(object sender, EventArgs e)
+        {
+            bHard = HardModeBox.Checked;
         }
     }
 }
